@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using Cecs475.BoardGames;
 using Cecs475.BoardGames.View;
 using System;
+using Cecs475.BoardGames.ComputerOpponent;
 
 namespace Cecs475.BoardGames.Othello.View {
 	public class OthelloSquare : INotifyPropertyChanged {
@@ -41,8 +42,10 @@ namespace Cecs475.BoardGames.Othello.View {
 	}
 
 	public class OthelloViewModel : INotifyPropertyChanged, IGameViewModel {
+		private const int MAX_AI_DEPTH = 6;
 		private OthelloBoard mBoard;
 		private ObservableCollection<OthelloSquare> mSquares;
+		private IGameAi mGameAi = new MinimaxAi(6);
 
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event EventHandler GameFinished;
@@ -77,46 +80,73 @@ namespace Cecs475.BoardGames.Othello.View {
 
 		public void UndoMove() {
 			mBoard.UndoLastMove();
+			// In one-player mode, Undo has to remove an additional move to return to the
+			// human player's turn.
+			if (Players == NumberOfPlayers.One) {
+				mBoard.UndoLastMove();
+			}
+			PossibleMoves = new HashSet<BoardPosition>(
+				from OthelloMove m in mBoard.GetPossibleMoves()
+				select m.Position
+			);
+			var newSquares =
+				from r in Enumerable.Range(0, 8)
+				from c in Enumerable.Range(0, 8)
+				select new BoardPosition(r, c);
+			int i = 0;
+			foreach (var pos in newSquares) {
+				mSquares[i].Player = mBoard.GetPieceAtPosition(pos);
+				i++;
+			}
+
+			OnPropertyChanged(nameof(BoardValue));
+			OnPropertyChanged(nameof(CurrentPlayer));
+			OnPropertyChanged(nameof(CanUndo));
 		}
 
 		public void ApplyMove(BoardPosition position) {
+			var possMoves = mBoard.GetPossibleMoves() as IEnumerable<OthelloMove>;
+			foreach (var move in possMoves) {
+				if (move.Position.Equals(position)) {
+					mBoard.ApplyMove(move);
+					break;
+				}
+			}
+
+			if (Players == NumberOfPlayers.One && !mBoard.IsFinished) {
+				var bestMove = mGameAi.FindBestMove(mBoard);
+				if (bestMove != null) {
+					mBoard.ApplyMove(bestMove);
+				}
+			}
+
+			PossibleMoves = new HashSet<BoardPosition>(
+				from OthelloMove m in mBoard.GetPossibleMoves()
+				select m.Position
+			);
+			var newSquares =
+				from r in Enumerable.Range(0, 8)
+				from c in Enumerable.Range(0, 8)
+				select new BoardPosition(r, c);
+			int i = 0;
+			foreach (var pos in newSquares) {
+				mSquares[i].Player = mBoard.GetPieceAtPosition(pos);
+				i++;
+			}
+
+			OnPropertyChanged(nameof(BoardValue));
+			OnPropertyChanged(nameof(CurrentPlayer));
+			OnPropertyChanged(nameof(CanUndo));
 			if (mBoard.PassCount == 2) {
 				GameFinished?.Invoke(this, new EventArgs());
 			}
-			else {
-				var possMoves = mBoard.GetPossibleMoves() as IEnumerable<OthelloMove>;
-				foreach (var move in possMoves) {
-					if (move.Position.Equals(position)) {
-						mBoard.ApplyMove(move);
-						break;
-					}
-				}
 
-				PossibleMoves = new HashSet<BoardPosition>(
-					from OthelloMove m in mBoard.GetPossibleMoves()
-					select m.Position
-				);
-				var newSquares =
-					from r in Enumerable.Range(0, 8)
-					from c in Enumerable.Range(0, 8)
-					select new BoardPosition(r, c);
-				int i = 0;
-				foreach (var pos in newSquares) {
-					mSquares[i].Player = mBoard.GetPieceAtPosition(pos);
-					i++;
-				}
+			if (PossibleMoves.Count == 1 && PossibleMoves.First().Row == -1) {
+				CurrentPlayerMustPass?.Invoke(this, new EventArgs());
+			}
 
-				OnPropertyChanged(nameof(BoardValue));
-				OnPropertyChanged(nameof(CurrentPlayer));
-				OnPropertyChanged(nameof(CanUndo));
-
-				if (PossibleMoves.Count == 1 && PossibleMoves.First().Row == -1) {
-					CurrentPlayerMustPass?.Invoke(this, new EventArgs());
-				}
-
-				if (PossibleMoves.Count == 0 || mBoard.IsFinished) {
-					GameFinished?.Invoke(this, new EventArgs());
-				}
+			if (PossibleMoves.Count == 0 || mBoard.IsFinished) {
+				GameFinished?.Invoke(this, new EventArgs());
 			}
 		}
 
@@ -132,11 +162,14 @@ namespace Cecs475.BoardGames.Othello.View {
 
 		public int CurrentPlayer { get { return mBoard.CurrentPlayer; } }
 
+		public NumberOfPlayers Players { get; set; }
 
 		public bool CanUndo {
 			get {
 				return mBoard.MoveHistory.Count > 0;
 			}
 		}
+
+
 	}
 }
