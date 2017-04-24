@@ -39,6 +39,18 @@ namespace Cecs475.BoardGames.WpfApplication {
 					Converter = gameType.CreateCurrentPlayerConverter()
 				}
 			);
+			viewAndViewModel.Item2.GameFinished += ViewModel_GameFinished;
+		}
+
+		private void ViewModel_GameFinished(object sender, EventArgs e) {
+			if (MessageBox.Show("Game over! Play a new game?", "Game over",
+				MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) ==
+				MessageBoxResult.Yes) {
+				this.Close();
+			}
+			else {
+				Environment.Exit(0);
+			}
 		}
 
 		private void UndoButton_Click(object sender, RoutedEventArgs e) {
