@@ -20,7 +20,7 @@ namespace Cecs475.BoardGames.TicTacToe.View {
 			return new TicTacToePlayerConverter();
 		}
 
-		public Tuple<Control, IGameViewModel> CreateViewAndViewModel() {
+		public Tuple<Control, IGameViewModel> CreateViewAndViewModel(NumberOfPlayers players) {
 			var view = new TicTacToeView();
 			var model = view.Model;
 			return new Tuple<Control, IGameViewModel>(view, model);
