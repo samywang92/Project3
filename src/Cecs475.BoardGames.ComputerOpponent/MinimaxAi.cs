@@ -37,10 +37,13 @@ namespace Cecs475.BoardGames.ComputerOpponent {
             // Your first attempt will not use alpha-beta pruning. Once that works, 
             // implement the pruning as discussed in the project notes.
             if (depthLeft == 0 || b.IsFinished)
-                return { b.Weight, null };
+                return new MinimaxBestMove()
+                { Weight= b.Weight,
+                    Move = null };
 
-            
-			//throw new NotImplementedException();
+
+            ;
+			throw new NotImplementedException();
 		}
 		
 	}

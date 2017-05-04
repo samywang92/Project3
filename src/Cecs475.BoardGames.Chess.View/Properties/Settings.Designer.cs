@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Cecs475.BoardGames.Chess.PawnPromote.Properties {
+namespace Cecs475.BoardGames.Chess.View.Properties {
 
 
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

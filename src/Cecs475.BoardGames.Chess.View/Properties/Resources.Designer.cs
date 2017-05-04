@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Cecs475.BoardGames.Chess.PawnPromote.Properties {
+namespace Cecs475.BoardGames.Chess.View.Properties {
 
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace Cecs475.BoardGames.Chess.PawnPromote.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if ((resourceMan == null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Cecs475.BoardGames.Chess.PawnPromote.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Cecs475.BoardGames.Chess.View.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -1,8 +1,8 @@
-﻿<Application x:Class="Cecs475.BoardGames.Chess.PawnPromote.App"
+﻿<Application x:Class="Cecs475.BoardGames.Chess.View.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Cecs475.BoardGames.Chess.PawnPromote"
-             StartupUri="MainWindow.xaml">
+             xmlns:local="clr-namespace:Cecs475.BoardGames.Chess.View"
+             StartupUri="ChessView.xaml">
     <Application.Resources>
          
     </Application.Resources>
