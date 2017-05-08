@@ -5,6 +5,8 @@ using System.Collections.ObjectModel;
 using Cecs475.BoardGames;
 using Cecs475.BoardGames.View;
 using System;
+using Cecs475.BoardGames.ComputerOpponent;
+using System.Threading.Tasks;
 
 namespace Cecs475.BoardGames.Chess.View {
     public class ChessSquare : INotifyPropertyChanged {
@@ -38,7 +40,7 @@ namespace Cecs475.BoardGames.Chess.View {
         public bool IsHovered {
             get { return mIsHovered; }
             set {
-                if(value != mIsHovered) {
+                if (value != mIsHovered) {
                     mIsHovered = value;
                     OnPropertyChanged(nameof(IsHovered));
                 }
@@ -49,7 +51,7 @@ namespace Cecs475.BoardGames.Chess.View {
         public bool IsCheck {
             get { return mIsCheck; }
             set {
-                if(value != mIsCheck) {
+                if (value != mIsCheck) {
                     mIsCheck = value;
                     OnPropertyChanged(nameof(IsCheck));
                 }
@@ -63,12 +65,15 @@ namespace Cecs475.BoardGames.Chess.View {
     }
 
     public class ChessViewModel : INotifyPropertyChanged, IGameViewModel {
+        private const int MAX_AI_DEPTH = 4;
         private ChessBoard mBoard;
         private ObservableCollection<ChessSquare> mSquares;
         private ChessSquare kingSquare = new ChessSquare();
+        private IGameAi mGameAi = new MinimaxAi(MAX_AI_DEPTH);
 
         public event EventHandler GameFinished;
         public event PropertyChangedEventHandler PropertyChanged;
+        //public event EventHandler CurrentPlayerMustPass;
 
         private void OnPropertyChanged(string name) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -136,13 +141,19 @@ namespace Cecs475.BoardGames.Chess.View {
             get; private set;
         }
 
+        public NumberOfPlayers Players { get; set; }
+
         public void UndoMove() {
             if (mBoard.MoveHistory.Any()) {
+                if (Players == NumberOfPlayers.One) {
+                    mBoard.UndoLastMove();
+                }
+
                 if (LastMove.MoveType == ChessMoveType.PawnPromote) {
                     mBoard.UndoLastMove();
                     LastMove = mBoard.MoveHistory[mBoard.MoveHistory.Count - 1] as ChessMove;
                 }
-                    
+
 
                 mBoard.UndoLastMove();
                 if (!mBoard.IsCheck) {
@@ -178,51 +189,91 @@ namespace Cecs475.BoardGames.Chess.View {
             }
         }
 
-        public void ApplyMove(ChessMove chessMove) {
-            
-            if (mBoard.IsCheckmate || mBoard.IsStalemate) {
-                GameFinished?.Invoke(this, new EventArgs());
-            } else {
-                var possMoves = mBoard.GetPossibleMoves() as IEnumerable<ChessMove>;
-                foreach (var move in possMoves) {
-                    if (move.Equals(chessMove)) {
-                        mBoard.ApplyMove(move);
-                        LastMove = chessMove;
-                        if (!mBoard.IsCheck) {
-                            kingSquare.IsCheck = false;
-                        }
-                        break;
-                    }
-                }
-
-                PossibleMoves = new HashSet<ChessMove>(
+        private void RebindState() {
+            PossibleMoves = new HashSet<ChessMove>(
                     from ChessMove m in mBoard.GetPossibleMoves()
                     select m
                 );
-                //CurrentPlayer == 2 ? 1:2
-                kingPos = mBoard.GetPositionsOfPiece(ChessPieceType.King,CurrentPlayer).FirstOrDefault();
-                isCheck = mBoard.IsCheck;
-                if (isCheck) {
-                    kingSquare = mSquares.Where(x => x.Position.Equals(kingPos)).FirstOrDefault();
-                    kingSquare.IsCheck = true;
-                }
-                
-
-                var newSquares =
-                    from r in Enumerable.Range(0, 8)
-                    from c in Enumerable.Range(0, 8)
-                    select new BoardPosition(r, c);
-
-                int i = 0;
-                foreach (var pos in newSquares) {
-                    mSquares[i].Piece = mBoard.GetPieceAtPosition(pos);
-                    i++;
-                }
-
+            //CurrentPlayer == 2 ? 1:2
+            kingPos = mBoard.GetPositionsOfPiece(ChessPieceType.King, CurrentPlayer).FirstOrDefault();
+            isCheck = mBoard.IsCheck;
+            if (isCheck) {
+                kingSquare = mSquares.Where(x => x.Position.Equals(kingPos)).FirstOrDefault();
+                kingSquare.IsCheck = true;
             }
+
+
+            var newSquares =
+                from r in Enumerable.Range(0, 8)
+                from c in Enumerable.Range(0, 8)
+                select new BoardPosition(r, c);
+
+            int i = 0;
+            foreach (var pos in newSquares) {
+                mSquares[i].Piece = mBoard.GetPieceAtPosition(pos);
+                i++;
+            }
+
+
             OnPropertyChanged(nameof(BoardValue));
             OnPropertyChanged(nameof(CurrentPlayer));
             OnPropertyChanged(nameof(CanUndo));
+        }
+
+        public async Task ApplyMove(ChessMove chessMove) {
+
+            //add ai pawn promotion
+
+            var possMoves = mBoard.GetPossibleMoves() as IEnumerable<ChessMove>;
+            foreach (var move in possMoves) {
+                if (move.Equals(chessMove)) {
+                    mBoard.ApplyMove(move);
+                    LastMove = chessMove;
+                    if (!mBoard.IsCheck) {
+                        kingSquare.IsCheck = false;
+                    }
+                    break;
+                }
+            }
+
+            //    PossibleMoves = new HashSet<ChessMove>(
+            //        from ChessMove m in mBoard.GetPossibleMoves()
+            //        select m
+            //    );
+            //    //CurrentPlayer == 2 ? 1:2
+            //    kingPos = mBoard.GetPositionsOfPiece(ChessPieceType.King,CurrentPlayer).FirstOrDefault();
+            //    isCheck = mBoard.IsCheck;
+            //    if (isCheck) {
+            //        kingSquare = mSquares.Where(x => x.Position.Equals(kingPos)).FirstOrDefault();
+            //        kingSquare.IsCheck = true;
+            //    }
+
+
+            //    var newSquares =
+            //        from r in Enumerable.Range(0, 8)
+            //        from c in Enumerable.Range(0, 8)
+            //        select new BoardPosition(r, c);
+
+            //    int i = 0;
+            //    foreach (var pos in newSquares) {
+            //        mSquares[i].Piece = mBoard.GetPieceAtPosition(pos);
+            //        i++;
+            //    }
+
+            //}
+            //OnPropertyChanged(nameof(BoardValue));
+            //OnPropertyChanged(nameof(CurrentPlayer));
+            //OnPropertyChanged(nameof(CanUndo));
+            RebindState();
+            if (Players == NumberOfPlayers.One && !mBoard.IsFinished) {
+
+                var bestMove = await Task.Run(() => mGameAi.FindBestMove(mBoard));
+                if (bestMove != null) {
+                    mBoard.ApplyMove(bestMove);
+                    RebindState();
+                }
+            }
+
             if (mBoard.IsCheckmate || mBoard.IsStalemate) {
                 GameFinished?.Invoke(this, new EventArgs());
             }
