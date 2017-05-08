@@ -46,7 +46,7 @@ namespace Cecs475.BoardGames.Chess.View {
             square.IsHovered = false;
         }
 
-        private async Task Border_MouseUp(object sender, MouseButtonEventArgs e) {
+        private async void Border_MouseUp(object sender, MouseButtonEventArgs e) {
             Border b = sender as Border;
             var square = b.DataContext as ChessSquare;
             var vm = FindResource("vm") as ChessViewModel;

@@ -24,7 +24,7 @@ namespace Cecs475.BoardGames.Chess.View {
             LastMove = vm.LastMove;
         }
 
-        private async Task bishopButton_Click(object sender, RoutedEventArgs e) {
+        private async void bishopButton_Click(object sender, RoutedEventArgs e) {
             var vm = FindResource("cvm") as ChessViewModel;
             LastMove = vm.LastMove;
             ChessMove pawnPromoteBishop = new ChessMove(LastMove.EndPosition, new BoardPosition(-1, (int)ChessPieceType.Bishop), ChessMoveType.PawnPromote);
@@ -32,7 +32,7 @@ namespace Cecs475.BoardGames.Chess.View {
             this.Close();
         }
 
-        private async Task knightButton_Click(object sender, RoutedEventArgs e) {
+        private async void knightButton_Click(object sender, RoutedEventArgs e) {
             var vm = FindResource("cvm") as ChessViewModel;
             LastMove = vm.LastMove;
             ChessMove pawnPromoteBishop = new ChessMove(LastMove.EndPosition, new BoardPosition(-1, (int)ChessPieceType.Knight), ChessMoveType.PawnPromote);
@@ -40,7 +40,7 @@ namespace Cecs475.BoardGames.Chess.View {
             this.Close();
         }
 
-        private async Task rookButton_Click(object sender, RoutedEventArgs e) {
+        private async void rookButton_Click(object sender, RoutedEventArgs e) {
             var vm = FindResource("cvm") as ChessViewModel;
             LastMove = vm.LastMove;
             ChessMove pawnPromoteBishop = new ChessMove(LastMove.EndPosition, new BoardPosition(-1, (int)ChessPieceType.RookPawn), ChessMoveType.PawnPromote);
@@ -48,7 +48,7 @@ namespace Cecs475.BoardGames.Chess.View {
             this.Close();
         }
 
-        private async Task queenButton_Click(object sender, RoutedEventArgs e) {
+        private async void queenButton_Click(object sender, RoutedEventArgs e) {
             var vm = FindResource("cvm") as ChessViewModel;
             LastMove = vm.LastMove;
             ChessMove pawnPromoteBishop = new ChessMove(LastMove.EndPosition, new BoardPosition(-1, (int)ChessPieceType.Queen), ChessMoveType.PawnPromote);

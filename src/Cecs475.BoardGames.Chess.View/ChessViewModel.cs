@@ -65,7 +65,7 @@ namespace Cecs475.BoardGames.Chess.View {
     }
 
     public class ChessViewModel : INotifyPropertyChanged, IGameViewModel {
-        private const int MAX_AI_DEPTH = 4;
+        private const int MAX_AI_DEPTH = 2;
         private ChessBoard mBoard;
         private ObservableCollection<ChessSquare> mSquares;
         private ChessSquare kingSquare = new ChessSquare();
