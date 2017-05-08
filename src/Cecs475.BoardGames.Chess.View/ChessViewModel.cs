@@ -145,9 +145,6 @@ namespace Cecs475.BoardGames.Chess.View {
 
         public void UndoMove() {
             if (mBoard.MoveHistory.Any()) {
-                if (Players == NumberOfPlayers.One) {
-                    mBoard.UndoLastMove();
-                }
 
                 if (LastMove.MoveType == ChessMoveType.PawnPromote) {
                     mBoard.UndoLastMove();
@@ -156,6 +153,10 @@ namespace Cecs475.BoardGames.Chess.View {
 
 
                 mBoard.UndoLastMove();
+                if (Players == NumberOfPlayers.One)
+                {
+                    mBoard.UndoLastMove();
+                }
                 if (!mBoard.IsCheck) {
                     kingSquare.IsCheck = false;
                 }

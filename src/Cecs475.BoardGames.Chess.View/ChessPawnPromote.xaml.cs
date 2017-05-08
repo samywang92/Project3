@@ -24,35 +24,35 @@ namespace Cecs475.BoardGames.Chess.View {
             LastMove = vm.LastMove;
         }
 
-        private void bishopButton_Click(object sender, RoutedEventArgs e) {
+        private async Task bishopButton_Click(object sender, RoutedEventArgs e) {
             var vm = FindResource("cvm") as ChessViewModel;
             LastMove = vm.LastMove;
             ChessMove pawnPromoteBishop = new ChessMove(LastMove.EndPosition, new BoardPosition(-1, (int)ChessPieceType.Bishop), ChessMoveType.PawnPromote);
-            vm.ApplyMove(pawnPromoteBishop);
+            await vm.ApplyMove(pawnPromoteBishop);
             this.Close();
         }
 
-        private void knightButton_Click(object sender, RoutedEventArgs e) {
+        private async Task knightButton_Click(object sender, RoutedEventArgs e) {
             var vm = FindResource("cvm") as ChessViewModel;
             LastMove = vm.LastMove;
             ChessMove pawnPromoteBishop = new ChessMove(LastMove.EndPosition, new BoardPosition(-1, (int)ChessPieceType.Knight), ChessMoveType.PawnPromote);
-            vm.ApplyMove(pawnPromoteBishop);
+            await vm.ApplyMove(pawnPromoteBishop);
             this.Close();
         }
 
-        private void rookButton_Click(object sender, RoutedEventArgs e) {
+        private async Task rookButton_Click(object sender, RoutedEventArgs e) {
             var vm = FindResource("cvm") as ChessViewModel;
             LastMove = vm.LastMove;
             ChessMove pawnPromoteBishop = new ChessMove(LastMove.EndPosition, new BoardPosition(-1, (int)ChessPieceType.RookPawn), ChessMoveType.PawnPromote);
-            vm.ApplyMove(pawnPromoteBishop);
+            await vm.ApplyMove(pawnPromoteBishop);
             this.Close();
         }
 
-        private void queenButton_Click(object sender, RoutedEventArgs e) {
+        private async Task queenButton_Click(object sender, RoutedEventArgs e) {
             var vm = FindResource("cvm") as ChessViewModel;
             LastMove = vm.LastMove;
             ChessMove pawnPromoteBishop = new ChessMove(LastMove.EndPosition, new BoardPosition(-1, (int)ChessPieceType.Queen), ChessMoveType.PawnPromote);
-            vm.ApplyMove(pawnPromoteBishop);
+            await vm.ApplyMove(pawnPromoteBishop);
             this.Close();
         }
     }

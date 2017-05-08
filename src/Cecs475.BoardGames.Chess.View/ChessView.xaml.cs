@@ -46,7 +46,7 @@ namespace Cecs475.BoardGames.Chess.View {
             square.IsHovered = false;
         }
 
-        private void Border_MouseUp(object sender, MouseButtonEventArgs e) {
+        private async Task Border_MouseUp(object sender, MouseButtonEventArgs e) {
             Border b = sender as Border;
             var square = b.DataContext as ChessSquare;
             var vm = FindResource("vm") as ChessViewModel;
@@ -56,7 +56,7 @@ namespace Cecs475.BoardGames.Chess.View {
             if (prevSquare.IsSelected) {
                 if (possibleEndMoves.Contains(square.Position)) {
                     ChessMove move = new ChessMove(prevSquare.Position, square.Position);
-                    vm.ApplyMove(move);
+                    await vm.ApplyMove(move);
                     prevSquare.IsSelected = false;
                     if(square.Piece.PieceType == ChessPieceType.Pawn && (square.Position.Row == 0 || square.Position.Row == 7)) {
                         switch (square.Piece.Player) {
