@@ -103,6 +103,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cecs475.BoardGames.Chess.Model\Cecs475.BoardGames.Chess.Model.csproj">
+      <Project>{1a1c94c2-0a5b-4da3-80b7-ccfe94c3643f}</Project>
+      <Name>Cecs475.BoardGames.Chess.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cecs475.BoardGames.Chess.View\Cecs475.BoardGames.Chess.View.csproj">
+      <Project>{a6abddc7-9425-4969-8eb5-4eec39efaf4b}</Project>
+      <Name>Cecs475.BoardGames.Chess.View</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cecs475.BoardGames.ComputerOpponent\Cecs475.BoardGames.ComputerOpponent.csproj">
+      <Project>{aa92c604-216c-462a-afd1-b51acd4d7625}</Project>
+      <Name>Cecs475.BoardGames.ComputerOpponent</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cecs475.BoardGames.Model\Cecs475.BoardGames.Model.csproj">
       <Project>{e30836fa-92e0-4787-9237-dc750c339fb9}</Project>
       <Name>Cecs475.BoardGames.Model</Name>
