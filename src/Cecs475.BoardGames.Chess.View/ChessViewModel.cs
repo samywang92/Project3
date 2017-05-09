@@ -65,7 +65,7 @@ namespace Cecs475.BoardGames.Chess.View {
     }
 
     public class ChessViewModel : INotifyPropertyChanged, IGameViewModel {
-        private const int MAX_AI_DEPTH = 4;
+        private const int MAX_AI_DEPTH = 2;
         private ChessBoard mBoard;
         private ObservableCollection<ChessSquare> mSquares;
         private ChessSquare kingSquare = new ChessSquare();
@@ -224,6 +224,8 @@ namespace Cecs475.BoardGames.Chess.View {
         public async Task ApplyMove(ChessMove chessMove) {
 
             //add ai pawn promotion
+            //if(LastMove.MoveType == ChessMoveType.PawnPromote)
+
 
             var possMoves = mBoard.GetPossibleMoves() as IEnumerable<ChessMove>;
             foreach (var move in possMoves) {
