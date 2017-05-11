@@ -65,7 +65,7 @@ namespace Cecs475.BoardGames.Chess.View {
     }
 
     public class ChessViewModel : INotifyPropertyChanged, IGameViewModel {
-        private const int MAX_AI_DEPTH = 2;
+        private const int MAX_AI_DEPTH = 4;
         private ChessBoard mBoard;
         private ObservableCollection<ChessSquare> mSquares;
         private ChessSquare kingSquare = new ChessSquare();
@@ -94,6 +94,7 @@ namespace Cecs475.BoardGames.Chess.View {
             );
 
             isCheck = mBoard.IsCheck;
+            Weight = mBoard.Weight;
 
             PossibleMoves = new HashSet<ChessMove>(
                 from ChessMove m in mBoard.GetPossibleMoves()
@@ -105,7 +106,7 @@ namespace Cecs475.BoardGames.Chess.View {
 
         public int BoardValue {
             get {
-                return mBoard.Value;
+                return mBoard.Weight;
             }
         }
 
@@ -114,6 +115,10 @@ namespace Cecs475.BoardGames.Chess.View {
         }
 
         public bool isCheck {
+            get; private set;
+        }
+
+        public int Weight {
             get; private set;
         }
 
@@ -161,6 +166,8 @@ namespace Cecs475.BoardGames.Chess.View {
                     kingSquare.IsCheck = false;
                 }
 
+                Weight = mBoard.Weight;
+
                 PossibleMoves = new HashSet<ChessMove>(
                      from ChessMove m in mBoard.GetPossibleMoves()
                      select m
@@ -191,6 +198,7 @@ namespace Cecs475.BoardGames.Chess.View {
         }
 
         private void RebindState() {
+
             PossibleMoves = new HashSet<ChessMove>(
                     from ChessMove m in mBoard.GetPossibleMoves()
                     select m
@@ -202,7 +210,7 @@ namespace Cecs475.BoardGames.Chess.View {
                 kingSquare = mSquares.Where(x => x.Position.Equals(kingPos)).FirstOrDefault();
                 kingSquare.IsCheck = true;
             }
-
+            Weight = mBoard.Weight;
 
             var newSquares =
                 from r in Enumerable.Range(0, 8)

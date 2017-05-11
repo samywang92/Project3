@@ -57,6 +57,7 @@ namespace Cecs475.BoardGames.Chess.View {
                 if (possibleEndMoves.Contains(square.Position)) {
                     ChessMove move = new ChessMove(prevSquare.Position, square.Position);
                     await vm.ApplyMove(move);
+                    //MessageBox.Show($"{vm.Weight}");
                     prevSquare.IsSelected = false;
                     if(square.Piece.PieceType == ChessPieceType.Pawn && (square.Position.Row == 0 || square.Position.Row == 7)) {
                         switch (square.Piece.Player) {

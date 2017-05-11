@@ -1,6 +1,7 @@
 ﻿using Cecs475.BoardGames.View;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -21,7 +22,27 @@ namespace Cecs475.BoardGames.WpfApplication {
 	public partial class GameChoiceWindow : Window {
 		public GameChoiceWindow() {
 			InitializeComponent();
-		}
+            //create directory for dll files
+            //C:/Users/Stephanie/Desktop/New folder/Project3/Project3/src/Cecs475.BoardGames.WpfApplication/bin/Debug/lib
+            //C:/Users/samue/Documents/CECS 475/Project3/Project3/src/Cecs475.BoardGames.WpfApplication/bin/Debug/lib
+            string dir = "C:/Users/samue/Documents/CECS 475/Project3/Project3/src/Cecs475.BoardGames.WpfApplication/bin/Debug/lib";
+            Type IGameType = typeof(IGameType);
+            List<Assembly> GameSearch = new List<Assembly>();
+            foreach (var dll in Directory.GetFiles(dir,"*.dll")){
+                var y = Assembly.LoadFrom(dll);
+                GameSearch.Add(y);
+            }
+            //filters the assemblies with goodes that are assignable and are classes
+            var gameTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(t => IGameType.IsAssignableFrom(t) && t.IsClass);
+            List<IGameType> GameList = new List<IGameType>();
+            foreach(var GameTypes in gameTypes) {
+                var x = GameTypes.GetConstructor(Type.EmptyTypes); // empty type are constructors that have no parameters
+                IGameType instance = (IGameType)x.Invoke(null);
+                GameList.Add(instance);
+            }
+            //add the list to the resource
+            this.Resources.Add("GameTypes", GameList);
+        }
 
 		private void Button_Click(object sender, RoutedEventArgs e) {
 			Button b = sender as Button;
