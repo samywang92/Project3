@@ -94,6 +94,7 @@ namespace Cecs475.BoardGames.Chess.View {
             );
 
             isCheck = mBoard.IsCheck;
+            Weight = mBoard.Weight;
 
             PossibleMoves = new HashSet<ChessMove>(
                 from ChessMove m in mBoard.GetPossibleMoves()
@@ -105,7 +106,7 @@ namespace Cecs475.BoardGames.Chess.View {
 
         public int BoardValue {
             get {
-                return mBoard.Value;
+                return mBoard.Weight;
             }
         }
 
@@ -114,6 +115,10 @@ namespace Cecs475.BoardGames.Chess.View {
         }
 
         public bool isCheck {
+            get; private set;
+        }
+
+        public int Weight {
             get; private set;
         }
 
@@ -145,9 +150,7 @@ namespace Cecs475.BoardGames.Chess.View {
 
         public void UndoMove() {
             if (mBoard.MoveHistory.Any()) {
-                if (Players == NumberOfPlayers.One) {
-                    mBoard.UndoLastMove();
-                }
+                
 
                 if (LastMove.MoveType == ChessMoveType.PawnPromote) {
                     mBoard.UndoLastMove();
@@ -156,9 +159,14 @@ namespace Cecs475.BoardGames.Chess.View {
 
 
                 mBoard.UndoLastMove();
+                if (Players == NumberOfPlayers.One) {
+                    mBoard.UndoLastMove();
+                }
                 if (!mBoard.IsCheck) {
                     kingSquare.IsCheck = false;
                 }
+
+                Weight = mBoard.Weight;
 
                 PossibleMoves = new HashSet<ChessMove>(
                      from ChessMove m in mBoard.GetPossibleMoves()
@@ -190,6 +198,7 @@ namespace Cecs475.BoardGames.Chess.View {
         }
 
         private void RebindState() {
+
             PossibleMoves = new HashSet<ChessMove>(
                     from ChessMove m in mBoard.GetPossibleMoves()
                     select m
@@ -201,7 +210,7 @@ namespace Cecs475.BoardGames.Chess.View {
                 kingSquare = mSquares.Where(x => x.Position.Equals(kingPos)).FirstOrDefault();
                 kingSquare.IsCheck = true;
             }
-
+            Weight = mBoard.Weight;
 
             var newSquares =
                 from r in Enumerable.Range(0, 8)
@@ -223,6 +232,8 @@ namespace Cecs475.BoardGames.Chess.View {
         public async Task ApplyMove(ChessMove chessMove) {
 
             //add ai pawn promotion
+            //if(LastMove.MoveType == ChessMoveType.PawnPromote)
+
 
             var possMoves = mBoard.GetPossibleMoves() as IEnumerable<ChessMove>;
             foreach (var move in possMoves) {
@@ -235,35 +246,6 @@ namespace Cecs475.BoardGames.Chess.View {
                     break;
                 }
             }
-
-            //    PossibleMoves = new HashSet<ChessMove>(
-            //        from ChessMove m in mBoard.GetPossibleMoves()
-            //        select m
-            //    );
-            //    //CurrentPlayer == 2 ? 1:2
-            //    kingPos = mBoard.GetPositionsOfPiece(ChessPieceType.King,CurrentPlayer).FirstOrDefault();
-            //    isCheck = mBoard.IsCheck;
-            //    if (isCheck) {
-            //        kingSquare = mSquares.Where(x => x.Position.Equals(kingPos)).FirstOrDefault();
-            //        kingSquare.IsCheck = true;
-            //    }
-
-
-            //    var newSquares =
-            //        from r in Enumerable.Range(0, 8)
-            //        from c in Enumerable.Range(0, 8)
-            //        select new BoardPosition(r, c);
-
-            //    int i = 0;
-            //    foreach (var pos in newSquares) {
-            //        mSquares[i].Piece = mBoard.GetPieceAtPosition(pos);
-            //        i++;
-            //    }
-
-            //}
-            //OnPropertyChanged(nameof(BoardValue));
-            //OnPropertyChanged(nameof(CurrentPlayer));
-            //OnPropertyChanged(nameof(CanUndo));
             RebindState();
             if (Players == NumberOfPlayers.One && !mBoard.IsFinished) {
 

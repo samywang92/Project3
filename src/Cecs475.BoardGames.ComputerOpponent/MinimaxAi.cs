@@ -34,10 +34,10 @@ namespace Cecs475.BoardGames.ComputerOpponent
             // mMaxDepth is what the depthLeft should start at.
             // You are maximizing iff the board's current player is 1.
 
-            return FindBestMove(b, mMaxDepth, b.CurrentPlayer == 1).Move;
+            return FindBestMove(b, mMaxDepth, b.CurrentPlayer == 1,int.MinValue,int.MaxValue).Move;
         }
 
-        private static MinimaxBestMove FindBestMove(IGameBoard b, int depthLeft, bool maximize)
+        private static MinimaxBestMove FindBestMove(IGameBoard b, int depthLeft, bool maximize,int alpha,int beta)
         {
             // Implement the minimax algorithm. 
             // Your first attempt will not use alpha-beta pruning. Once that works, 
@@ -48,42 +48,48 @@ namespace Cecs475.BoardGames.ComputerOpponent
                     Weight = b.Weight,
                     Move = null
                 };
-            int bestWeight;
             IGameMove bestMove = null;
-            if (maximize)
-            {
-                bestWeight = int.MinValue;
-            }
-            else
-            {
-                bestWeight = int.MaxValue;
-            }
 
-            foreach (var move in b.GetPossibleMoves())
-            {
+            foreach (var move in b.GetPossibleMoves()){
                 b.ApplyMove(move);
-                var CurrentDirection = b.CurrentPlayer == 1 ? 2 : 1;
-                bool isMaximizing = CurrentDirection == 1 ? true: false;
-                var w = FindBestMove(b, depthLeft - 1, !maximize).Weight;
+                var w = FindBestMove(b, depthLeft - 1, !maximize, alpha, beta).Weight;
                 b.UndoLastMove();
-                if (maximize && w > bestWeight)
-                {
-                    bestWeight = w;
+                if (b.CurrentPlayer == 1 && w > alpha){
+                    alpha = w;
                     bestMove = move;
-
+                }else if (b.CurrentPlayer == 2 && w < beta){
+                    beta = w;
+                    bestMove = move;
                 }
-                else if (!maximize && w < bestWeight)
-                {
-                    bestWeight = w;
-                    bestMove = move;
+
+                if (alpha >= beta) {
+                    if (b.CurrentPlayer == 1) {
+                        return new MinimaxBestMove() {
+                            Weight = beta,
+                            Move = bestMove
+                        };
+                    } else {
+                        return new MinimaxBestMove() {
+                            Weight = alpha,
+                            Move = bestMove
+                        };
+
+                    }
                 }
             }
 
-            return new MinimaxBestMove()
-            {
-                Weight = bestWeight,
-                Move = bestMove
-            };
+            if (b.CurrentPlayer == 1) {
+                return new MinimaxBestMove() {
+                    Weight = alpha,
+                    Move = bestMove
+                };
+            } else {
+                return new MinimaxBestMove() {
+                    Weight = beta,
+                    Move = bestMove
+                };
+            }
+            
         }
 
     }

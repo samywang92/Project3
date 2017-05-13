@@ -1087,10 +1087,81 @@ namespace Cecs475.BoardGames.Chess {
                 return check;
             }
         }
-
+        public int GetThreatWeight(ChessPieceType PieceType) {
+            int pieceWeight = 0;
+            switch (PieceType) {
+                case ChessPieceType.Knight:
+                    pieceWeight = 1;
+                    break;
+                case ChessPieceType.Bishop:
+                    pieceWeight = 1;
+                    break;
+                case ChessPieceType.RookKing:
+                    pieceWeight = 2;
+                    break;
+                case ChessPieceType.RookPawn:
+                    pieceWeight = 2;
+                    break;
+                case ChessPieceType.RookQueen:
+                    pieceWeight = 2;
+                    break;
+                case ChessPieceType.Queen:
+                    pieceWeight = 5;
+                    break;
+                case ChessPieceType.King:
+                    pieceWeight = 4;
+                    break;
+            }
+            return pieceWeight;
+        }
         public int Weight {
             get {
-                return Value;
+                int blackScore = 0, whiteScore = 0, boardWeight = 0;
+                var currentPlayerThreat = GetThreatenedPositions(CurrentPlayer);
+                var opponentPlayerThreat = GetThreatenedPositions(CurrentPlayer == 1 ? 2:1);
+                foreach (int i in Enumerable.Range(0, 8)) { // another way of doing for i = 0 to < 8
+                    foreach (int j in Enumerable.Range(0, 8)) {
+                        BoardPosition position = new BoardPosition(i, j);
+                        ChessPiecePosition p = GetPieceAtPosition(position);
+                        switch (p.Player) {
+                            case 1:
+                                whiteScore += GetPieceValue(p.PieceType);
+                                if(p.PieceType == ChessPieceType.Pawn) {
+                                    int d = Math.Abs(i - 6);
+                                    whiteScore += d;
+                                }
+                                break;
+                            case 2:
+                                blackScore += GetPieceValue(p.PieceType);
+                                if (p.PieceType == ChessPieceType.Pawn) {
+                                    int d = Math.Abs(i - 1);
+                                    blackScore += d;
+                                }
+                                break;
+                        }
+                    }
+                }
+                foreach(var threatPos in currentPlayerThreat) {
+                    var piece = GetPieceAtPosition(threatPos);
+                    if(piece.Player == 2) {
+                        blackScore += GetThreatWeight(piece.PieceType);
+                    }
+                    if(piece.PieceType == ChessPieceType.Knight || piece.PieceType == ChessPieceType.Bishop) {
+                        whiteScore += 1;
+                    }
+
+                }
+                foreach(var threatPos in opponentPlayerThreat) {
+                    var piece = GetPieceAtPosition(threatPos);
+                    if (piece.Player == 1) {
+                        whiteScore += GetThreatWeight(piece.PieceType);
+                    }
+                    if (piece.PieceType == ChessPieceType.Knight || piece.PieceType == ChessPieceType.Bishop) {
+                        blackScore += 1;
+                    }
+                }
+                boardWeight = whiteScore - blackScore;
+                return boardWeight;
             }
         }
 
